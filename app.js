@@ -32,6 +32,10 @@ input.addEventListener("change", () => {
     // audio preview icon
     audioIcon.style.backgroundImage = `url(${img})`;
 
+    updateFavicon(img);
+
+    localStorage.setItem("selectedIcon", img);
+
     // animación GSAP
     gsap.fromTo(
       circle,
@@ -48,6 +52,7 @@ input.addEventListener("change", () => {
 // cargar icono guardado
 const savedIcon = localStorage.getItem("selectedIcon");
 if (savedIcon) {
+  updateFavicon(savedIcon);
   circle.classList.remove("border-dashed", "border-zinc-600");
   circle.classList.add("border-transparent");
 
@@ -77,3 +82,29 @@ audioBtn.addEventListener("click", () => {
     });
   }
 });
+
+function updateFavicon(imageSrc) {
+  const favicon = document.getElementById("dynamicFavicon");
+
+  const img = new Image();
+  img.src = imageSrc;
+
+  img.onload = () => {
+    const canvas = document.createElement("canvas");
+    const size = 64; // ideal para favicon
+    canvas.width = size;
+    canvas.height = size;
+
+    const ctx = canvas.getContext("2d");
+
+    // círculo
+    ctx.beginPath();
+    ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+    ctx.closePath();
+    ctx.clip();
+
+    ctx.drawImage(img, 0, 0, size, size);
+
+    favicon.href = canvas.toDataURL("image/png");
+  };
+}
